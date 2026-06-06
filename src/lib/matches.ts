@@ -318,4 +318,22 @@ const knockoutMatches: Match[] = [
   knockoutMatch("2026-07-11", 15, "QF-W7","QF-W8",    "Quarterfinal","Atlanta Stadium",                "Atlanta",        "USA"),
 
   // Semifinals – Jul 14–15
-  knockoutMatch("2026-07-14", 15,
+  knockoutMatch("2026-07-14", 15,"SF-W1","SF-W2",    "Semifinal",   "Dallas Stadium",                 "Dallas",         "USA"),
+  knockoutMatch("2026-07-15", 15, "SF-W3","SF-W4",    "Semifinal",   "New York New Jersey Stadium",    "East Rutherford","USA"),
+  knockoutMatch("2026-07-18", 15, "SF-L1","SF-L2",    "Third Place", "Houston Stadium",                "Houston",        "USA"),
+  knockoutMatch("2026-07-19", 18, "SF-W1","SF-W2",    "Final",       "New York New Jersey Stadium",    "East Rutherford","USA"),
+];
+
+export const matches: Match[] = [...groupMatches, ...knockoutMatches].sort(
+  (a, b) => a.utcKickoff.localeCompare(b.utcKickoff),
+);
+
+export const HOST_COUNTRIES = [
+  { name: "USA",    flag: "🇺🇸" },
+  { name: "Canada", flag: "🇨🇦" },
+  { name: "Mexico", flag: "🇲🇽" },
+];
+
+export const TOURNAMENT_START_UTC = new Date(
+  Date.UTC(2026, 5, 11, 19, 0),
+).toISOString();
