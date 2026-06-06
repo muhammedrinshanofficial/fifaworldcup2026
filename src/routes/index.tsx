@@ -86,13 +86,9 @@ function Index() {
         const q = search.trim().toLowerCase();
         if (!m.home.name.toLowerCase().includes(q) && !m.away.name.toLowerCase().includes(q)) return false;
       }
-      if (tab === "myteams") {
-        if (favs.size === 0) return false;
-        if (!favs.has(m.home.code) && !favs.has(m.away.code)) return false;
-      }
       return true;
     });
-  }, [filters, search, tab, favs]);
+  }, [filters, search]);
 
   const grouped = useMemo(() => {
     const m = new Map<string, typeof filtered>();
@@ -103,6 +99,17 @@ function Index() {
     }
     return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0]));
   }, [filtered]);
+
+  const favGrouped = useMemo(() => {
+    const favMatches = matches.filter((m) => favs.has(m.home.code) || favs.has(m.away.code));
+    const m = new Map<string, typeof favMatches>();
+    for (const match of favMatches) {
+      const arr = m.get(match.date) ?? [];
+      arr.push(match);
+      m.set(match.date, arr);
+    }
+    return [...m.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  }, [favs]);
 
   const matchOfTheDay = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -194,7 +201,7 @@ function Index() {
           <section>
             <h2 className="text-2xl md:text-3xl font-black mb-6 text-gradient-gold">My Teams</h2>
             <div className="space-y-10">
-              {grouped.map(([date, ms]) => {
+              {favGrouped.map(([date, ms]) => {
                 const dt = new Date(date + "T00:00:00");
                 const label = dt.toLocaleDateString("en-US", {
                   weekday: "long", month: "long", day: "numeric", year: "numeric",
