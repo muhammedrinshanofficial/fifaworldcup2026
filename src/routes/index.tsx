@@ -67,7 +67,6 @@ function Index() {
 
   const todayDate = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
-    // pick nearest upcoming date >= today, else first
     return allDates.find((d) => d >= today) ?? allDates[0];
   }, [allDates]);
 
@@ -108,7 +107,6 @@ function Index() {
   const matchOfTheDay = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
     const todays = matches.filter((m) => m.date >= today);
-    // pick a marquee match: first one that contains BRA/ARG/FRA/ESP/ENG/GER
     const star = ["BRA", "ARG", "FRA", "ESP", "ENG", "GER"];
     return (
       todays.find((m) => star.includes(m.home.code) || star.includes(m.away.code)) ?? todays[0] ?? matches[0]
@@ -133,7 +131,6 @@ function Index() {
       <main className="container mx-auto px-4 pb-24 space-y-12">
         {tab === "schedule" && (
           <>
-            {/* Match of the Day */}
             <section>
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-5 h-5 text-primary" />
@@ -152,7 +149,6 @@ function Index() {
             <section id="schedule-list">
               <h2 className="text-xl md:text-2xl font-black mb-4">Full Schedule</h2>
               <FilterBar filters={filters} setFilters={setFilters} dates={allDates} goToToday={goToToday} />
-
               <div className="mt-8 space-y-10">
                 {grouped.length === 0 && (
                   <p className="text-center text-muted-foreground py-12">No matches match your filters.</p>
@@ -160,10 +156,7 @@ function Index() {
                 {grouped.map(([date, ms]) => {
                   const dt = new Date(date + "T00:00:00");
                   const label = dt.toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
+                    weekday: "long", month: "long", day: "numeric", year: "numeric",
                   });
                   return (
                     <div key={date}>
@@ -194,6 +187,32 @@ function Index() {
           <section>
             <h2 className="text-2xl md:text-3xl font-black mb-6 text-gradient-gold">Host Venues</h2>
             <VenuesGrid />
+          </section>
+        )}
+
+        {tab === "myteams" && favs.size > 0 && (
+          <section>
+            <h2 className="text-2xl md:text-3xl font-black mb-6 text-gradient-gold">My Teams</h2>
+            <div className="space-y-10">
+              {grouped.map(([date, ms]) => {
+                const dt = new Date(date + "T00:00:00");
+                const label = dt.toLocaleDateString("en-US", {
+                  weekday: "long", month: "long", day: "numeric", year: "numeric",
+                });
+                return (
+                  <div key={date}>
+                    <h3 className="text-sm uppercase tracking-widest font-bold text-accent mb-4 sticky top-16 glass-strong rounded-lg px-3 py-2 z-10 -mx-2">
+                      {label} <span className="text-muted-foreground font-normal">· {ms.length} matches</span>
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                      {ms.map((m) => (
+                        <MatchCard key={m.id} match={m} favorites={favs} toggleFavorite={toggle} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </section>
         )}
 
